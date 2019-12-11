@@ -41,7 +41,7 @@
 
 
         </Grid>
-        <Canvas x:Name="mainCanvas" Grid.Column="1" Loaded="MainCanvas_Loaded" SizeChanged="mainCanvas_SizeChanged" />
+        <Canvas x:Name="mainCanvas" Grid.Column="1" Loaded="MainCanvas_Loaded" SizeChanged="MainCanvas_SizeChanged" />
 
     </Grid>
 </Window>

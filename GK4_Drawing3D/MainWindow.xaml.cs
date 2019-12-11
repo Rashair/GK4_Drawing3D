@@ -1,6 +1,4 @@
-﻿using GK4_Lab1.Algorithms;
-using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
+﻿using MathNet.Numerics.LinearAlgebra.Double;
 using System;
 using System.Linq;
 using System.Windows;
@@ -17,13 +15,18 @@ namespace GK4_Lab1
     public partial class MainWindow : Window
     {
         // conf
-        int sideSize;
-        const double rotationDegree = 4;
+        private int sideSize;
+
+        private Size initialCanvasSize;
+        private const int fovMult = 90;
+        private double fov = 1 * fovMult;
+        private const double rotationDegree = 4;
 
         // variables
-        WriteableBitmap bmp;
-        readonly DispatcherTimer timer;
-        double alfa = 30;
+        private WriteableBitmap bmp;
+
+        private readonly DispatcherTimer timer;
+        private double alfa = 30;
 
         public MainWindow()
         {
@@ -45,6 +48,7 @@ namespace GK4_Lab1
         {
             int w = (int)mainCanvas.ActualWidth;
             int h = (int)mainCanvas.ActualHeight;
+            initialCanvasSize = mainCanvas.RenderSize;
             sideSize = (int)(Math.Min(w, h) / 2.0);
             SetBitmapImage(w, h);
             timer.Start();
@@ -76,7 +80,6 @@ namespace GK4_Lab1
 
             var n = 1.0;
             var f = 40.0;
-            var fov = 100.0;
             var a = 1.0;
 
             var e = 1.0 / Math.Tan((fov * Math.PI) / 180.0 / 2);
@@ -86,7 +89,6 @@ namespace GK4_Lab1
                 { 0,  0  , -(f+n)/(f-n), -(2*f*n)/(f-n) },
                 { 0,  0  , -1  ,  0 }
             });
-
 
             var viewMatrix = DenseMatrix.OfArray(new double[,] {
                 { 0,  1  , 0  , -0.5 },
@@ -163,7 +165,7 @@ namespace GK4_Lab1
             bmp.DrawLine(x1, y1, x2, y2, Colors.Black);
         }
 
-        private void mainCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void MainCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (bmp == null)
             {
@@ -171,7 +173,8 @@ namespace GK4_Lab1
             }
 
             timer.Stop();
-            sideSize = (int)(Math.Min(e.NewSize.Width, e.NewSize.Height) / 2.0);
+            var ratio = (initialCanvasSize.Width) / (e.NewSize.Width);
+            fov = Math.Min(130, ratio * fovMult);
             SetBitmapImage((int)e.NewSize.Width, (int)e.NewSize.Height);
             timer.Start();
         }
